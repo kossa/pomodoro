@@ -39,8 +39,10 @@ fi
 
 mkdir -p "$ROOT/build"
 rm -f "$ZIP"
-# No --sequesterRsrc: it adds a __MACOSX folder to the unzipped output.
-ditto -c -k --keepParent "$ROOT/Pomodoro.app" "$ZIP"
+# --norsrc/--noextattr keep AppleDouble ._* files out of the archive, which plain
+# `unzip` would otherwise create and thereby break the code signature. Without
+# --sequesterRsrc there is also no __MACOSX folder.
+ditto -c -k --keepParent --norsrc --noextattr "$ROOT/Pomodoro.app" "$ZIP"
 cp "$ZIP" "$LATEST_ZIP"
 
 git tag -a "$TAG" -m "Pomodoro $VERSION"

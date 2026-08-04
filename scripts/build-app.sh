@@ -29,6 +29,10 @@ cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
 [ -f "$ROOT/Resources/AppIcon.icns" ] || swift "$ROOT/scripts/make-icon.swift"
 cp "$ROOT/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 
+# Strip extended attributes before signing: if any survive into the release zip,
+# `unzip` materializes them as ._* files and the signature seal breaks.
+xattr -cr "$APP"
+
 # Ad-hoc signature: enough for this Mac, not for distribution.
 codesign --force --sign - "$APP"
 
