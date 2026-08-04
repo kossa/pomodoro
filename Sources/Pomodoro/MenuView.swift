@@ -5,6 +5,7 @@ struct MenuView: View {
     @ObservedObject var settings: Settings
     @ObservedObject var stats: Stats
     @ObservedObject var shortcuts: Shortcuts
+    @ObservedObject var updater: Updater
 
     @State private var showingSettings = false
 
@@ -103,6 +104,8 @@ struct MenuView: View {
                                                           set: { settings.menuBarStyle = $0 })) {
                         ForEach(MenuBarStyle.allCases) { Text($0.title).tag($0) }
                     }
+                    Divider()
+                    updatesSection
                 }
                 .padding(.top, 8)
                 .font(.callout)
@@ -142,6 +145,60 @@ struct MenuView: View {
                     soundPicker("Long break ends", phase: .longBreak)
                 }
             }
+        }
+    }
+
+    private var updatesSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Toggle("Check for updates daily", isOn: $updater.checkDaily)
+
+            HStack {
+                Text("Version \(updater.currentVersion)")
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button("Check now") { Task { await updater.check() } }
+                    .disabled(updater.state == .checking || updater.state == .downloading)
+            }
+
+            updateStatus
+        }
+    }
+
+    @ViewBuilder
+    private var updateStatus: some View {
+        switch updater.state {
+        case .idle:
+            if let last = updater.lastChecked {
+                Text("Last checked \(last.formatted(date: .abbreviated, time: .shortened))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        case .checking:
+            Label("Checking…", systemImage: "arrow.triangle.2.circlepath")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        case .upToDate:
+            Label("Up to date", systemImage: "checkmark.circle")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        case .downloading:
+            Label("Downloading…", systemImage: "arrow.down.circle")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        case let .available(release):
+            VStack(alignment: .leading, spacing: 6) {
+                Label("Version \(release.version) is available", systemImage: "sparkles")
+                    .font(.caption)
+                HStack {
+                    Button("Update and restart") { Task { await updater.install(release) } }
+                        .buttonStyle(.borderedProminent)
+                    Button("Notes") { NSWorkspace.shared.open(release.pageURL) }
+                }
+            }
+        case let .failed(message):
+            Label("Update check failed: \(message)", systemImage: "exclamationmark.triangle")
+                .font(.caption)
+                .foregroundStyle(.orange)
         }
     }
 

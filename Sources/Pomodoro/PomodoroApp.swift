@@ -10,6 +10,7 @@ struct PomodoroApp: App {
     @StateObject private var stats: Stats
     @StateObject private var engine: TimerEngine
     @StateObject private var shortcuts: Shortcuts
+    @StateObject private var updater: Updater
 
     private let notifier = Notifier()
     private let coordinator: HotKeyCoordinator
@@ -23,18 +24,23 @@ struct PomodoroApp: App {
             TimerEngine(settings: settings, stats: stats, notifier: notifier)
         }
 
+        let updater = MainActor.assumeIsolated { Updater() }
+
         _settings = StateObject(wrappedValue: settings)
         _stats = StateObject(wrappedValue: stats)
         _shortcuts = StateObject(wrappedValue: shortcuts)
         _engine = StateObject(wrappedValue: engine)
+        _updater = StateObject(wrappedValue: updater)
         coordinator = HotKeyCoordinator(engine: engine, shortcuts: shortcuts)
 
         notifier.requestAuthorization()
+        MainActor.assumeIsolated { updater.checkIfDue() }
     }
 
     var body: some Scene {
         MenuBarExtra {
-            MenuView(engine: engine, settings: settings, stats: stats, shortcuts: shortcuts)
+            MenuView(engine: engine, settings: settings, stats: stats,
+                     shortcuts: shortcuts, updater: updater)
         } label: {
             Text(menuBarTitle)
         }

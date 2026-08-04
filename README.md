@@ -21,6 +21,8 @@ A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.
 - Auto-start the next session (toggleable)
 - **Force start** — jump straight into a focus or break at any point in the cycle
 - Daily and weekly completed-session counts, kept for 30 days
+- **Self-updating** — checks GitHub once a day (or on demand), then downloads,
+  verifies and installs the new version in place
 
 ## Install
 
