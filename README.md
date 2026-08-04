@@ -2,20 +2,9 @@
 
 A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.
 
-```
-  🍅 24:13          ← live countdown in the menu bar
- ┌──────────────────────┐
- │   🍅  Focus          │
- │       24:13          │
- │  ▓▓▓▓▓░░░░░░░░░░░░   │
- │   ▶     ↺     ⏭     │
- │  Force start         │
- │   ◎     ☕     🛏     │
- │  3 today · 11 week   │
- │  ▸ Settings          │
- │  Quit Pomodoro       │
- └──────────────────────┘
-```
+<p align="center">
+  <img src="docs/screenshot.png" alt="The Pomodoro popover: countdown, transport controls, force-start buttons, session stats and the expanded settings" width="330">
+</p>
 
 ## Features
 
@@ -31,21 +20,36 @@ A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.
 - **Force start** — jump straight into a focus or break at any point in the cycle
 - Daily and weekly completed-session counts, kept for 30 days
 
-## Build & install
+## Install
 
-Requires macOS 14+ and the Swift toolchain (Command Line Tools are enough).
+Download the latest release (the repo is private, so use `gh`):
+
+```sh
+gh release download --repo kossa/pomodoro --pattern 'Pomodoro-*.zip'
+unzip -q Pomodoro-*.zip
+xattr -dr com.apple.quarantine Pomodoro.app   # it is ad-hoc signed, not notarized
+mv Pomodoro.app /Applications/
+open /Applications/Pomodoro.app
+```
+
+Requires macOS 14 or later, Apple silicon.
+
+### Build from source
+
+Needs the Swift toolchain — the Command Line Tools are enough.
 
 ```sh
 ./scripts/build-app.sh     # produces ./Pomodoro.app
 ./scripts/install.sh       # copies it to /Applications and launches it
+./scripts/release.sh 1.1.0 # tag, build and publish a GitHub release
 ```
 
 `Package.swift` is included for building with a full Xcode install. The build script
 compiles with `swiftc` directly, because the SwiftPM manifest library shipped with the
 Command Line Tools is version-mismatched and cannot compile the manifest.
 
-The app is ad-hoc signed — fine on the machine that built it. On another Mac, right-click
-→ Open the first time.
+The app is ad-hoc signed rather than notarized, which is why the `xattr` step above is
+needed after downloading. Built locally, it just runs.
 
 ## Launch at login
 
