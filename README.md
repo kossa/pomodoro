@@ -8,7 +8,8 @@ A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.
 
 ## Features
 
-- Live countdown in the menu bar (emoji changes with the phase)
+- Live countdown in the menu bar — show the tomato and the time, **or hide either one**
+  (emoji changes with the phase)
 - Configurable focus / short break / long break lengths and long-break interval
 - **Long breaks can be turned off** entirely — then every break is a short one
 - **A different chime per phase** — pick any system sound (or none) for the end of a
@@ -22,17 +23,17 @@ A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.
 
 ## Install
 
-Download the latest release (the repo is private, so use `gh`):
+Grab the [latest release](https://github.com/kossa/pomodoro/releases/latest), or paste this:
 
 ```sh
-gh release download --repo kossa/pomodoro --pattern 'Pomodoro-*.zip'
-unzip -q Pomodoro-*.zip
-xattr -dr com.apple.quarantine Pomodoro.app   # it is ad-hoc signed, not notarized
-mv Pomodoro.app /Applications/
+curl -L -o /tmp/Pomodoro.zip https://github.com/kossa/pomodoro/releases/latest/download/Pomodoro.zip
+unzip -oq /tmp/Pomodoro.zip -d /Applications
+xattr -dr com.apple.quarantine /Applications/Pomodoro.app   # ad-hoc signed, not notarized
 open /Applications/Pomodoro.app
 ```
 
-Requires macOS 14 or later, Apple silicon.
+Requires macOS 14 or later, Apple silicon. `Pomodoro.zip` always points at the newest
+version; each release also carries a version-stamped copy.
 
 ### Build from source
 

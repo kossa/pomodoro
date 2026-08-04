@@ -42,9 +42,7 @@ struct PomodoroApp: App {
     }
 
     private var menuBarTitle: String {
-        settings.showTimeInMenuBar
-            ? "\(engine.phase.symbol) \(engine.formattedRemaining)"
-            : engine.phase.symbol
+        settings.menuBarStyle.title(phase: engine.phase, remaining: engine.formattedRemaining)
     }
 }
 

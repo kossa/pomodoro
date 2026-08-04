@@ -1,5 +1,31 @@
 import SwiftUI
 
+/// What the menu bar shows. Something must remain clickable, so the tomato and the
+/// countdown can each be hidden but not both at once.
+enum MenuBarStyle: String, CaseIterable, Identifiable {
+    case iconAndTime
+    case timeOnly
+    case iconOnly
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .iconAndTime: return "Tomato and time"
+        case .timeOnly: return "Time only"
+        case .iconOnly: return "Tomato only"
+        }
+    }
+
+    func title(phase: Phase, remaining: String) -> String {
+        switch self {
+        case .iconAndTime: return "\(phase.symbol) \(remaining)"
+        case .timeOnly: return remaining
+        case .iconOnly: return phase.symbol
+        }
+    }
+}
+
 /// User preferences, backed by UserDefaults so they survive relaunches.
 final class Settings: ObservableObject {
     @AppStorage("focusMinutes") var focusMinutes: Int = 25 { willSet { objectWillChange.send() } }
@@ -9,7 +35,14 @@ final class Settings: ObservableObject {
     @AppStorage("longBreaksEnabled") var longBreaksEnabled: Bool = true { willSet { objectWillChange.send() } }
     @AppStorage("autoStartNext") var autoStartNext: Bool = true { willSet { objectWillChange.send() } }
     @AppStorage("playSound") var playSound: Bool = true { willSet { objectWillChange.send() } }
-    @AppStorage("showTimeInMenuBar") var showTimeInMenuBar: Bool = true { willSet { objectWillChange.send() } }
+    @AppStorage("menuBarStyle") private var menuBarStyleRaw: String = MenuBarStyle.iconAndTime.rawValue {
+        willSet { objectWillChange.send() }
+    }
+
+    var menuBarStyle: MenuBarStyle {
+        get { MenuBarStyle(rawValue: menuBarStyleRaw) ?? .iconAndTime }
+        set { menuBarStyleRaw = newValue.rawValue }
+    }
 
     /// Chime played when each phase *ends*. Empty string means silent.
     @AppStorage("focusEndSound") var focusEndSound: String = "Glass" { willSet { objectWillChange.send() } }

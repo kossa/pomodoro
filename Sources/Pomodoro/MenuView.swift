@@ -82,7 +82,10 @@ struct MenuView: View {
                     shortcutSection
                     Divider()
                     Toggle("Auto-start next session", isOn: $settings.autoStartNext)
-                    Toggle("Show countdown in menu bar", isOn: $settings.showTimeInMenuBar)
+                    Picker("Menu bar", selection: Binding(get: { settings.menuBarStyle },
+                                                          set: { settings.menuBarStyle = $0 })) {
+                        ForEach(MenuBarStyle.allCases) { Text($0.title).tag($0) }
+                    }
                 }
                 .padding(.top, 8)
             }
