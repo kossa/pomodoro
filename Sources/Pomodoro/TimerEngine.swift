@@ -104,9 +104,14 @@ final class TimerEngine: ObservableObject {
 
     private func startTicking() {
         ticker?.cancel()
-        ticker = Timer.publish(every: 0.25, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in self?.tick() }
+        // One tick a second is all the display needs, and the tolerance lets the
+        // system coalesce the wake-ups with others rather than firing precisely.
+        let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { self?.tick() }
+        }
+        timer.tolerance = 0.2
+        RunLoop.main.add(timer, forMode: .common)
+        ticker = AnyCancellable { timer.invalidate() }
     }
 
     private func tick() {
@@ -115,7 +120,9 @@ final class TimerEngine: ObservableObject {
         if left <= 0 {
             remaining = 0
             complete()
-        } else {
+        } else if Int(left.rounded(.up)) != Int(remaining.rounded(.up)) {
+            // Publishing only when the shown second changes keeps SwiftUI from
+            // re-rendering the menu bar item on every tick.
             remaining = left
         }
     }

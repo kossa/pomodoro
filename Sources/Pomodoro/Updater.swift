@@ -45,6 +45,7 @@ final class Updater: ObservableObject {
             defaults.set(true, forKey: "checkForUpdatesDaily")
         }
         self.checkDaily = defaults.bool(forKey: "checkForUpdatesDaily")
+        self.lastChecked = defaults.object(forKey: Self.lastCheckKey) as? Date
 
         // Re-evaluate periodically so an app left running for days still checks.
         timer = Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { [weak self] _ in
@@ -52,7 +53,8 @@ final class Updater: ObservableObject {
         }
     }
 
-    var lastChecked: Date? { defaults.object(forKey: Self.lastCheckKey) as? Date }
+    /// Held in memory rather than read from UserDefaults on every layout pass.
+    @Published private(set) var lastChecked: Date?
 
     /// Checks only if daily checking is on and a day has passed.
     func checkIfDue() {
@@ -77,7 +79,9 @@ final class Updater: ObservableObject {
                 throw UpdateError.message("GitHub returned \(code)")
             }
             let release = try Self.parseRelease(data)
-            defaults.set(Date(), forKey: Self.lastCheckKey)
+            let now = Date()
+            defaults.set(now, forKey: Self.lastCheckKey)
+            lastChecked = now
 
             state = Self.isNewer(release.version, than: currentVersion) ? .available(release) : .upToDate
         } catch {

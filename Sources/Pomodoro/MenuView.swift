@@ -51,6 +51,7 @@ struct MenuView: View {
         }
         .padding(16)
         .frame(width: 300)
+        .onAppear { stats.refreshSummaryIfDayChanged() }
     }
 
     private var header: some View {
