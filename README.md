@@ -15,6 +15,12 @@
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license">
 </p>
 
+- 🍅 Live countdown in the menu bar
+- ⌨️ Global shortcuts (no Accessibility permission)
+- 🔄 Auto-updates from GitHub
+- 📊 Daily & weekly statistics
+- ⚡ Native SwiftUI, zero dependencies
+
 <p align="center">
   <img src="docs/screenshot.png" alt="The countdown running in the macOS menu bar, with the popover open below it: timer, transport controls, force-start buttons, session stats and the expanded settings" width="380">
 </p>
