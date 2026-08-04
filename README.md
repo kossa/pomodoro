@@ -1,6 +1,19 @@
-# 🍅 Pomodoro
+<p align="center">
+  <img src="docs/icon.png" alt="Pomodoro app icon" width="128">
+</p>
 
-A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.
+<h1 align="center">Pomodoro</h1>
+
+<p align="center">
+  A native macOS menu bar Pomodoro timer.<br>
+  SwiftUI, no dependencies, no Dock icon.
+</p>
+
+<p align="center">
+  <a href="https://github.com/kossa/pomodoro/releases/latest"><img src="https://img.shields.io/github/v/release/kossa/pomodoro?color=e5484d&label=download" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/macOS-14%2B-blue" alt="macOS 14 or later">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license">
+</p>
 
 <p align="center">
   <img src="docs/screenshot.png" alt="The countdown running in the macOS menu bar, with the popover open below it: timer, transport controls, force-start buttons, session stats and the expanded settings" width="380">
