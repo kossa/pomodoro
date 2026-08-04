@@ -4,8 +4,8 @@
 #   ./scripts/release.sh 1.0.0
 #
 # Stamps the version into Info.plist, builds a fresh Pomodoro.app, zips it with
-# ditto (which preserves the bundle's signature and symlinks) and attaches it to
-# the tag as a release asset.
+# ditto (which preserves the bundle's signature) and attaches it to the tag as a
+# release asset.
 set -euo pipefail
 
 VERSION="${1:-}"
@@ -37,7 +37,8 @@ fi
 
 mkdir -p "$ROOT/build"
 rm -f "$ZIP"
-ditto -c -k --sequesterRsrc --keepParent "$ROOT/Pomodoro.app" "$ZIP"
+# No --sequesterRsrc: it adds a __MACOSX folder to the unzipped output.
+ditto -c -k --keepParent "$ROOT/Pomodoro.app" "$ZIP"
 
 git tag -a "$TAG" -m "Pomodoro $VERSION"
 git push -q origin "$TAG"
