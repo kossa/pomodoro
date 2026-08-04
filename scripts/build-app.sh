@@ -1,0 +1,32 @@
+#!/bin/bash
+# Build Pomodoro.app.
+#
+# We compile with swiftc directly rather than `swift build`: the SwiftPM manifest
+# library shipped with the Command Line Tools is version-mismatched and cannot
+# compile Package.swift. Package.swift is kept for use with a full Xcode install.
+#
+# A real .app bundle is required for LSUIElement (no Dock icon) and for
+# UserNotifications to be available.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+APP="$ROOT/Pomodoro.app"
+MIN_MACOS="14.0"
+ARCH="$(uname -m)"
+
+rm -rf "$APP"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+
+swiftc -O \
+    -target "${ARCH}-apple-macosx${MIN_MACOS}" \
+    -parse-as-library \
+    "$ROOT"/Sources/Pomodoro/*.swift \
+    -o "$APP/Contents/MacOS/Pomodoro"
+
+cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
+
+# Ad-hoc signature: enough for this Mac, not for distribution.
+codesign --force --sign - "$APP"
+
+echo "Built $APP"
+echo "Run it with:  open \"$APP\""
