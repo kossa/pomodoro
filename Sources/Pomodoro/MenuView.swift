@@ -73,7 +73,24 @@ struct MenuView: View {
 
     private var footer: some View {
         VStack(alignment: .leading, spacing: 10) {
-            DisclosureGroup("Settings", isExpanded: $showingSettings) {
+            // A plain DisclosureGroup only reacts to clicks on its chevron, so the
+            // header is its own button covering the whole row.
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) { showingSettings.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .rotationEffect(.degrees(showingSettings ? 90 : 0))
+                    Text("Settings")
+                    Spacer()
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .font(.callout)
+
+            if showingSettings {
                 VStack(alignment: .leading, spacing: 10) {
                     durations
                     Divider()
@@ -88,8 +105,8 @@ struct MenuView: View {
                     }
                 }
                 .padding(.top, 8)
+                .font(.callout)
             }
-            .font(.callout)
 
             HStack {
                 Button {
@@ -175,13 +192,28 @@ struct MenuView: View {
         }
     }
 
+    /// A typable field with a stepper beside it. Out-of-range or non-numeric input
+    /// snaps back to the nearest allowed value when the field is committed.
     private func stepper(_ title: String, value: Binding<Int>, range: ClosedRange<Int>, unit: String) -> some View {
-        Stepper(value: value, in: range) {
-            HStack {
-                Text(title)
-                Spacer()
-                Text("\(value.wrappedValue) \(unit)").foregroundStyle(.secondary)
-            }
+        let clamped = Binding<Int>(
+            get: { min(max(value.wrappedValue, range.lowerBound), range.upperBound) },
+            set: { value.wrappedValue = min(max($0, range.lowerBound), range.upperBound) }
+        )
+
+        return HStack(spacing: 6) {
+            Text(title)
+            Spacer(minLength: 8)
+            TextField("", value: clamped, format: .number)
+                .textFieldStyle(.roundedBorder)
+                .multilineTextAlignment(.trailing)
+                .frame(width: 44)
+                .labelsHidden()
+                .help("Type a value between \(range.lowerBound) and \(range.upperBound)")
+            Text(unit)
+                .foregroundStyle(.secondary)
+                .font(.caption)
+            Stepper(value: clamped, in: range) { EmptyView() }
+                .labelsHidden()
         }
     }
 }

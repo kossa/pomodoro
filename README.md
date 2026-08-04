@@ -10,7 +10,8 @@ A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.
 
 - Live countdown in the menu bar — show the tomato and the time, **or hide either one**
   (emoji changes with the phase)
-- Configurable focus / short break / long break lengths and long-break interval
+- Configurable focus / short break / long break lengths and long-break interval —
+  type a value directly or use the stepper
 - **Long breaks can be turned off** entirely — then every break is a short one
 - **A different chime per phase** — pick any system sound (or none) for the end of a
   focus session, a break, and a long break, with a preview button
