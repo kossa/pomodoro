@@ -57,7 +57,7 @@ Menu bar Pomodoro timer for macOS 14+ (Apple silicon).
 
 \`\`\`sh
 curl -L -o /tmp/Pomodoro.zip https://github.com/kossa/pomodoro/releases/latest/download/Pomodoro.zip
-unzip -oq /tmp/Pomodoro.zip -d /Applications
+ditto -x -k /tmp/Pomodoro.zip /Applications
 xattr -dr com.apple.quarantine /Applications/Pomodoro.app
 open /Applications/Pomodoro.app
 \`\`\`

@@ -27,10 +27,13 @@ Grab the [latest release](https://github.com/kossa/pomodoro/releases/latest), or
 
 ```sh
 curl -L -o /tmp/Pomodoro.zip https://github.com/kossa/pomodoro/releases/latest/download/Pomodoro.zip
-unzip -oq /tmp/Pomodoro.zip -d /Applications
+ditto -x -k /tmp/Pomodoro.zip /Applications
 xattr -dr com.apple.quarantine /Applications/Pomodoro.app   # ad-hoc signed, not notarized
 open /Applications/Pomodoro.app
 ```
+
+`ditto` rather than `unzip`: it unpacks macOS bundles without leaving `._*` files
+behind, which would otherwise invalidate the app's code signature.
 
 Requires macOS 14 or later, Apple silicon. `Pomodoro.zip` always points at the newest
 version; each release also carries a version-stamped copy.
