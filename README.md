@@ -40,6 +40,16 @@
 - **Self-updating** — checks GitHub once a day (or on demand), then downloads,
   verifies and installs the new version in place
 
+## How it compares
+
+| Feature | Pomodoro | Other menu bar timers |
+| --- | :---: | :---: |
+| Native SwiftUI | ✅ | Varies |
+| No Dock icon | ✅ | ❌ |
+| No Accessibility permission | ✅ | ❌ |
+| Self-updating | ✅ | Varies |
+| Zero dependencies | ✅ | ❌ |
+
 ## Install
 
 Grab the [latest release](https://github.com/kossa/pomodoro/releases/latest), or paste this:
