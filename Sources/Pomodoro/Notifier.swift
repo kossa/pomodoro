@@ -17,22 +17,22 @@ final class Notifier {
         }
     }
 
-    func notify(title: String, body: String, playSound: Bool) {
+    /// `soundName` is a system sound; nil is silent.
+    func notify(title: String, body: String, soundName: String?) {
         if authorized, let center {
             let content = UNMutableNotificationContent()
             content.title = title
             content.body = body
-            if playSound { content.sound = .default }
+            // The chime is played directly so the user's per-phase choice is honoured
+            // and it isn't muted by the banner's own sound settings.
+            content.sound = nil
             let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
             center.add(request, withCompletionHandler: nil)
         } else {
             displayViaOsascript(title: title, body: body)
-            if playSound { NSSound(named: "Glass")?.play() }
-            return
         }
 
-        // The banner sound can be suppressed by Focus modes; the chime is the reliable cue.
-        if playSound { NSSound(named: "Glass")?.play() }
+        SoundLibrary.play(soundName)
     }
 
     private func displayViaOsascript(title: String, body: String) {

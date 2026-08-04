@@ -133,7 +133,7 @@ final class TimerEngine: ObservableObject {
         }
         notifier.notify(title: "\(finished.symbol) \(finished.title) complete",
                         body: body,
-                        playSound: settings.playSound)
+                        soundName: settings.endSound(for: finished))
     }
 
     private func advance(credit: Bool, autoStart: Bool) {
@@ -155,6 +155,7 @@ final class TimerEngine: ObservableObject {
     }
 
     private func nextBreakPhase() -> Phase {
+        guard settings.longBreaksEnabled else { return .shortBreak }
         let cycleLength = max(1, settings.sessionsUntilLongBreak)
         return focusInCycle > 0 && focusInCycle % cycleLength == 0 ? .longBreak : .shortBreak
     }

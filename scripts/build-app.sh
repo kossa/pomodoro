@@ -25,6 +25,10 @@ swiftc -O \
 
 cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
 
+# Regenerate the icon if it is missing (it is checked in, so normally it isn't).
+[ -f "$ROOT/Resources/AppIcon.icns" ] || swift "$ROOT/scripts/make-icon.swift"
+cp "$ROOT/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+
 # Ad-hoc signature: enough for this Mac, not for distribution.
 codesign --force --sign - "$APP"
 

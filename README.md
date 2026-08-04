@@ -8,9 +8,9 @@ A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.
  │   🍅  Focus          │
  │       24:13          │
  │  ▓▓▓▓▓░░░░░░░░░░░░   │
- │  Start  Reset  Skip  │
+ │   ▶     ↺     ⏭     │
  │  Force start         │
- │  🍅 Focus ☕️ Break 🌴 │
+ │   ◎     ☕     🛏     │
  │  3 today · 11 week   │
  │  ▸ Settings          │
  │  Quit Pomodoro       │
@@ -21,7 +21,12 @@ A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.
 
 - Live countdown in the menu bar (emoji changes with the phase)
 - Configurable focus / short break / long break lengths and long-break interval
-- Notification + chime when a session ends
+- **Long breaks can be turned off** entirely — then every break is a short one
+- **A different chime per phase** — pick any system sound (or none) for the end of a
+  focus session, a break, and a long break, with a preview button
+- **Global shortcuts** for start/pause, force focus, and force break — registered through
+  Carbon, so no Accessibility permission is needed. Default: <kbd>⌃⌥Space</kbd> toggles the
+  timer. A shortcut another app already owns is flagged with a warning triangle.
 - Auto-start the next session (toggleable)
 - **Force start** — jump straight into a focus or break at any point in the cycle
 - Daily and weekly completed-session counts, kept for 30 days
@@ -56,7 +61,15 @@ System Settings → General → Login Items → **+** → `/Applications/Pomodor
 | `Sources/Pomodoro/Settings.swift` | Preferences (`@AppStorage`) |
 | `Sources/Pomodoro/Stats.swift` | Per-day completed focus counts |
 | `Sources/Pomodoro/Notifier.swift` | Notification + chime, with an `osascript` fallback |
+| `Sources/Pomodoro/SoundLibrary.swift` | System alert sounds, discovered at runtime |
+| `Sources/Pomodoro/HotKeys.swift` | Global shortcut bindings and Carbon registration |
+| `Sources/Pomodoro/ShortcutRecorder.swift` | Click-to-record shortcut field |
 | `Sources/Pomodoro/MenuView.swift` | The popover UI |
+
+## Icon
+
+`Resources/AppIcon.icns` is generated, not hand-drawn — `swift scripts/make-icon.swift`
+redraws every size from code. Edit the drawing in that script to change the icon.
 
 ## License
 

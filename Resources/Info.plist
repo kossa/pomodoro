@@ -8,6 +8,8 @@
 	<string>Pomodoro</string>
 	<key>CFBundleExecutable</key>
 	<string>Pomodoro</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.kossa.pomodoro</string>
 	<key>CFBundlePackageType</key>

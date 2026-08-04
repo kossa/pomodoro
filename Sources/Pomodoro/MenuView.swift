@@ -4,6 +4,7 @@ struct MenuView: View {
     @ObservedObject var engine: TimerEngine
     @ObservedObject var settings: Settings
     @ObservedObject var stats: Stats
+    @ObservedObject var shortcuts: Shortcuts
 
     @State private var showingSettings = false
 
@@ -19,7 +20,7 @@ struct MenuView: View {
             footer
         }
         .padding(16)
-        .frame(width: 260)
+        .frame(width: 300)
     }
 
     private var header: some View {
@@ -36,12 +37,12 @@ struct MenuView: View {
     }
 
     private var controls: some View {
-        HStack(spacing: 8) {
-            Button(engine.isRunning ? "Pause" : "Start") { engine.toggle() }
-                .keyboardShortcut(.space, modifiers: [])
-                .buttonStyle(.borderedProminent)
-            Button("Reset") { engine.reset() }
-            Button("Skip") { engine.skip() }
+        HStack(spacing: 10) {
+            iconButton(engine.isRunning ? "pause.fill" : "play.fill",
+                       help: engine.isRunning ? "Pause" : "Start",
+                       prominent: true) { engine.toggle() }
+            iconButton("arrow.counterclockwise", help: "Reset this session") { engine.reset() }
+            iconButton("forward.end.fill", help: "Skip to the next session") { engine.skip() }
         }
         .frame(maxWidth: .infinity)
     }
@@ -49,11 +50,14 @@ struct MenuView: View {
     private var forceSection: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Force start").font(.caption).foregroundStyle(.secondary)
-            HStack(spacing: 8) {
-                Button("🍅 Focus") { engine.forceStart(.focus) }
-                Button("☕️ Break") { engine.forceStartBreak() }
-                Button("🌴 Long") { engine.forceStart(.longBreak) }
+            HStack(spacing: 10) {
+                iconButton("target", help: "Force start a focus session") { engine.forceStart(.focus) }
+                iconButton("cup.and.saucer.fill", help: "Force start a break") { engine.forceStartBreak() }
+                if settings.longBreaksEnabled {
+                    iconButton("bed.double.fill", help: "Force start a long break") { engine.forceStart(.longBreak) }
+                }
             }
+            .frame(maxWidth: .infinity)
         }
     }
 
@@ -70,21 +74,101 @@ struct MenuView: View {
     private var footer: some View {
         VStack(alignment: .leading, spacing: 10) {
             DisclosureGroup("Settings", isExpanded: $showingSettings) {
-                VStack(alignment: .leading, spacing: 8) {
-                    stepper("Focus", value: $settings.focusMinutes, range: 1...120, unit: "min")
-                    stepper("Short break", value: $settings.shortBreakMinutes, range: 1...60, unit: "min")
-                    stepper("Long break", value: $settings.longBreakMinutes, range: 1...60, unit: "min")
-                    stepper("Long break every", value: $settings.sessionsUntilLongBreak, range: 2...12, unit: "sessions")
+                VStack(alignment: .leading, spacing: 10) {
+                    durations
+                    Divider()
+                    sounds
+                    Divider()
+                    shortcutSection
+                    Divider()
                     Toggle("Auto-start next session", isOn: $settings.autoStartNext)
-                    Toggle("Sound", isOn: $settings.playSound)
                     Toggle("Show countdown in menu bar", isOn: $settings.showTimeInMenuBar)
                 }
-                .padding(.top, 6)
+                .padding(.top, 8)
             }
             .font(.callout)
 
-            Button("Quit Pomodoro") { NSApplication.shared.terminate(nil) }
+            HStack {
+                Button {
+                    NSApplication.shared.terminate(nil)
+                } label: {
+                    Label("Quit", systemImage: "power")
+                }
                 .keyboardShortcut("q")
+                Spacer()
+            }
+        }
+    }
+
+    private var durations: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            stepper("Focus", value: $settings.focusMinutes, range: 1...120, unit: "min")
+            stepper("Short break", value: $settings.shortBreakMinutes, range: 1...60, unit: "min")
+            Toggle("Long breaks", isOn: $settings.longBreaksEnabled)
+            if settings.longBreaksEnabled {
+                stepper("Long break", value: $settings.longBreakMinutes, range: 1...60, unit: "min")
+                stepper("Long break every", value: $settings.sessionsUntilLongBreak, range: 2...12, unit: "sessions")
+            }
+        }
+    }
+
+    private var sounds: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Toggle("Sound", isOn: $settings.playSound)
+            if settings.playSound {
+                soundPicker("Focus ends", phase: .focus)
+                soundPicker("Break ends", phase: .shortBreak)
+                if settings.longBreaksEnabled {
+                    soundPicker("Long break ends", phase: .longBreak)
+                }
+            }
+        }
+    }
+
+    private var shortcutSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Global shortcuts").font(.caption).foregroundStyle(.secondary)
+            ForEach(HotKeyAction.allCases) { action in
+                ShortcutRecorder(action: action, shortcuts: shortcuts)
+            }
+        }
+    }
+
+    private func soundPicker(_ title: String, phase: Phase) -> some View {
+        let binding = settings.endSoundBinding(for: phase)
+        return HStack {
+            Picker(title, selection: binding) {
+                Text("None").tag(SoundLibrary.silentName)
+                Divider()
+                ForEach(SoundLibrary.names, id: \.self) { Text($0).tag($0) }
+            }
+            Button {
+                SoundLibrary.play(binding.wrappedValue)
+            } label: {
+                Image(systemName: "speaker.wave.2.fill")
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.secondary)
+            .help("Preview")
+            .disabled(binding.wrappedValue.isEmpty)
+        }
+    }
+
+    @ViewBuilder
+    private func iconButton(_ symbol: String, help: String, prominent: Bool = false,
+                            action: @escaping () -> Void) -> some View {
+        let label = Image(systemName: symbol)
+            .font(.system(size: 14, weight: .medium))
+            .frame(width: 34, height: 24)
+
+        if prominent {
+            Button(action: action) { label }
+                .buttonStyle(.borderedProminent)
+                .help(help)
+        } else {
+            Button(action: action) { label }
+                .buttonStyle(.bordered)
+                .help(help)
         }
     }
 
