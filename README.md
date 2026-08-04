@@ -8,8 +8,11 @@ A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.
 
 ## Features
 
-- Live countdown in the menu bar — show the tomato and the time, **or hide either one**
-  (emoji changes with the phase)
+- Live countdown in the menu bar, its emoji following the phase — show or hide the
+  tomato, the minutes and the seconds independently. Hide all three and the item goes
+  blank but stays clickable, leaving notifications as the cue.
+- Settings split into **Timer / Sounds / Shortcuts / General** tabs, so the popover
+  stays short
 - Configurable focus / short break / long break lengths and long-break interval —
   type a value directly or use the stepper
 - **Long breaks can be turned off** entirely — then every break is a short one
@@ -75,7 +78,8 @@ System Settings → General → Login Items → **+** → `/Applications/Pomodor
 | `Sources/Pomodoro/SoundLibrary.swift` | System alert sounds, discovered at runtime |
 | `Sources/Pomodoro/HotKeys.swift` | Global shortcut bindings and Carbon registration |
 | `Sources/Pomodoro/ShortcutRecorder.swift` | Click-to-record shortcut field |
-| `Sources/Pomodoro/MenuView.swift` | The popover UI |
+| `Sources/Pomodoro/Updater.swift` | Release checks and the in-place update |
+| `Sources/Pomodoro/MenuView.swift` | The popover UI and its settings tabs |
 
 ## Icon
 

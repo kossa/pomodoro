@@ -1,31 +1,5 @@
 import SwiftUI
 
-/// What the menu bar shows. Something must remain clickable, so the tomato and the
-/// countdown can each be hidden but not both at once.
-enum MenuBarStyle: String, CaseIterable, Identifiable {
-    case iconAndTime
-    case timeOnly
-    case iconOnly
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .iconAndTime: return "Tomato and time"
-        case .timeOnly: return "Time only"
-        case .iconOnly: return "Tomato only"
-        }
-    }
-
-    func title(phase: Phase, remaining: String) -> String {
-        switch self {
-        case .iconAndTime: return "\(phase.symbol) \(remaining)"
-        case .timeOnly: return remaining
-        case .iconOnly: return phase.symbol
-        }
-    }
-}
-
 /// User preferences, backed by UserDefaults so they survive relaunches.
 final class Settings: ObservableObject {
     @AppStorage("focusMinutes") var focusMinutes: Int = 25 { willSet { objectWillChange.send() } }
@@ -35,13 +9,51 @@ final class Settings: ObservableObject {
     @AppStorage("longBreaksEnabled") var longBreaksEnabled: Bool = true { willSet { objectWillChange.send() } }
     @AppStorage("autoStartNext") var autoStartNext: Bool = true { willSet { objectWillChange.send() } }
     @AppStorage("playSound") var playSound: Bool = true { willSet { objectWillChange.send() } }
-    @AppStorage("menuBarStyle") private var menuBarStyleRaw: String = MenuBarStyle.iconAndTime.rawValue {
-        willSet { objectWillChange.send() }
+    // What the menu bar item shows. At least one part always stays visible so the
+    // item remains findable and clickable.
+    @AppStorage("menuBarShowIcon") var menuBarShowIcon: Bool = true { willSet { objectWillChange.send() } }
+    @AppStorage("menuBarShowMinutes") var menuBarShowMinutes: Bool = true { willSet { objectWillChange.send() } }
+    @AppStorage("menuBarShowSeconds") var menuBarShowSeconds: Bool = true { willSet { objectWillChange.send() } }
+
+    init(defaults: UserDefaults = .standard) {
+        Self.migrateMenuBarStyle(defaults)
     }
 
-    var menuBarStyle: MenuBarStyle {
-        get { MenuBarStyle(rawValue: menuBarStyleRaw) ?? .iconAndTime }
-        set { menuBarStyleRaw = newValue.rawValue }
+    /// Carries the pre-1.4 three-way style over to the individual switches.
+    private static func migrateMenuBarStyle(_ defaults: UserDefaults) {
+        guard let style = defaults.string(forKey: "menuBarStyle") else { return }
+        switch style {
+        case "timeOnly":
+            defaults.set(false, forKey: "menuBarShowIcon")
+        case "iconOnly":
+            defaults.set(false, forKey: "menuBarShowMinutes")
+            defaults.set(false, forKey: "menuBarShowSeconds")
+        default:
+            break
+        }
+        defaults.removeObject(forKey: "menuBarStyle")
+    }
+
+    var menuBarIsBlank: Bool { !menuBarShowIcon && !menuBarShowMinutes && !menuBarShowSeconds }
+
+    /// The menu bar label. Seconds alone keep an "s" so a bare number can't be read
+    /// as minutes. With everything switched off the item is a blank — still there to
+    /// click, but silent, leaving notifications as the cue.
+    func menuBarTitle(phase: Phase, remaining: TimeInterval) -> String {
+        let total = Int(max(0, remaining.rounded(.up)))
+        var parts: [String] = []
+
+        if menuBarShowIcon { parts.append(phase.symbol) }
+        if menuBarShowMinutes, menuBarShowSeconds {
+            parts.append(String(format: "%02d:%02d", total / 60, total % 60))
+        } else if menuBarShowMinutes {
+            parts.append("\(total / 60)")
+        } else if menuBarShowSeconds {
+            parts.append("\(total)s")
+        }
+
+        // A space, not an empty string: it keeps the item clickable.
+        return parts.isEmpty ? " " : parts.joined(separator: " ")
     }
 
     /// Chime played when each phase *ends*. Empty string means silent.

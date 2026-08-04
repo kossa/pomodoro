@@ -48,7 +48,7 @@ struct PomodoroApp: App {
     }
 
     private var menuBarTitle: String {
-        settings.menuBarStyle.title(phase: engine.phase, remaining: engine.formattedRemaining)
+        settings.menuBarTitle(phase: engine.phase, remaining: engine.remaining)
     }
 }
 

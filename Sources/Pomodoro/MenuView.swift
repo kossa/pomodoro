@@ -1,5 +1,33 @@
 import SwiftUI
 
+/// The settings pane is split so the popover stays short.
+enum SettingsTab: String, CaseIterable, Identifiable {
+    case timer
+    case sounds
+    case shortcuts
+    case general
+
+    var id: String { rawValue }
+
+    var symbol: String {
+        switch self {
+        case .timer: return "timer"
+        case .sounds: return "speaker.wave.2"
+        case .shortcuts: return "keyboard"
+        case .general: return "gearshape"
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .timer: return "Timer"
+        case .sounds: return "Sounds"
+        case .shortcuts: return "Shortcuts"
+        case .general: return "General"
+        }
+    }
+}
+
 struct MenuView: View {
     @ObservedObject var engine: TimerEngine
     @ObservedObject var settings: Settings
@@ -8,6 +36,7 @@ struct MenuView: View {
     @ObservedObject var updater: Updater
 
     @State private var showingSettings = false
+    @State private var tab: SettingsTab = .timer
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -93,19 +122,33 @@ struct MenuView: View {
 
             if showingSettings {
                 VStack(alignment: .leading, spacing: 10) {
-                    durations
-                    Divider()
-                    sounds
-                    Divider()
-                    shortcutSection
-                    Divider()
-                    Toggle("Auto-start next session", isOn: $settings.autoStartNext)
-                    Picker("Menu bar", selection: Binding(get: { settings.menuBarStyle },
-                                                          set: { settings.menuBarStyle = $0 })) {
-                        ForEach(MenuBarStyle.allCases) { Text($0.title).tag($0) }
+                    Picker("", selection: $tab) {
+                        ForEach(SettingsTab.allCases) { tab in
+                            Image(systemName: tab.symbol)
+                                .help(tab.title)
+                                .tag(tab)
+                        }
                     }
-                    Divider()
-                    updatesSection
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .frame(maxWidth: .infinity)
+
+                    Text(tab.title)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    // No fixed height here: a floor makes the taller tabs report a
+                    // smaller size than they draw, and the Quit row lands on top
+                    // of them. Each tab sizes itself instead.
+                    Group {
+                        switch tab {
+                        case .timer: timerTab
+                        case .sounds: sounds
+                        case .shortcuts: shortcutSection
+                        case .general: generalTab
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
                 }
                 .padding(.top, 8)
                 .font(.callout)
@@ -123,7 +166,7 @@ struct MenuView: View {
         }
     }
 
-    private var durations: some View {
+    private var timerTab: some View {
         VStack(alignment: .leading, spacing: 8) {
             stepper("Focus", value: $settings.focusMinutes, range: 1...120, unit: "min")
             stepper("Short break", value: $settings.shortBreakMinutes, range: 1...60, unit: "min")
@@ -132,6 +175,27 @@ struct MenuView: View {
                 stepper("Long break", value: $settings.longBreakMinutes, range: 1...60, unit: "min")
                 stepper("Long break every", value: $settings.sessionsUntilLongBreak, range: 2...12, unit: "sessions")
             }
+            Divider()
+            Toggle("Auto-start next session", isOn: $settings.autoStartNext)
+        }
+    }
+
+    private var generalTab: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Menu bar shows").font(.caption).foregroundStyle(.secondary)
+                Toggle("Tomato", isOn: $settings.menuBarShowIcon)
+                Toggle("Minutes", isOn: $settings.menuBarShowMinutes)
+                Toggle("Seconds", isOn: $settings.menuBarShowSeconds)
+                if settings.menuBarIsBlank {
+                    Text("The item stays clickable but shows nothing — notifications and shortcuts still work.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Divider()
+            updatesSection
         }
     }
 
