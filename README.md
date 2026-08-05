@@ -118,6 +118,10 @@ System Settings → General → Login Items → **+** → `/Applications/Pomodor
 `Resources/AppIcon.icns` is generated, not hand-drawn — `swift scripts/make-icon.swift`
 redraws every size from code. Edit the drawing in that script to change the icon.
 
+## Changelog
+
+Every release is listed in [CHANGELOG.md](CHANGELOG.md).
+
 ## Issues and ideas
 
 Found a bug, or want a feature that isn't here? Please feel free to
