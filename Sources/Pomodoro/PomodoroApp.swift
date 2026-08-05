@@ -33,6 +33,11 @@ struct PomodoroApp: App {
         _updater = StateObject(wrappedValue: updater)
         coordinator = HotKeyCoordinator(engine: engine, shortcuts: shortcuts)
 
+        // Clicking the "X complete" banner starts the phase it just moved on to.
+        // `start()` is a no-op when auto-start already got there first.
+        notifier.onActivate = { [weak engine] in
+            MainActor.assumeIsolated { engine?.start() }
+        }
         notifier.requestAuthorization()
         MainActor.assumeIsolated { updater.checkIfDue() }
     }

@@ -41,6 +41,9 @@
   Carbon, so no Accessibility permission is needed. Default: <kbd>⌃⌥Space</kbd> toggles the
   timer. A shortcut another app already owns is flagged with a warning triangle.
 - Auto-start the next session (toggleable)
+- **Click the notification to start the next session** — when auto-start is off, the
+  end-of-session banner carries a *Start Break* / *Start Focus* button, and clicking
+  the banner itself does the same
 - **Force start** — jump straight into a focus or break at any point in the cycle
 - Daily and weekly completed-session counts, kept for 30 days
 - **Self-updating** — checks GitHub once a day (or on demand), then downloads,
@@ -114,6 +117,12 @@ System Settings → General → Login Items → **+** → `/Applications/Pomodor
 
 `Resources/AppIcon.icns` is generated, not hand-drawn — `swift scripts/make-icon.swift`
 redraws every size from code. Edit the drawing in that script to change the icon.
+
+## Issues and ideas
+
+Found a bug, or want a feature that isn't here? Please feel free to
+[open an issue](https://github.com/kossa/pomodoro/issues) — bug reports and feature
+requests are equally welcome.
 
 ## License
 

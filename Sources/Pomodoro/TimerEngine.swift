@@ -133,14 +133,18 @@ final class TimerEngine: ObservableObject {
 
         let next = phase
         let body: String
+        let actionTitle: String?
         if settings.autoStartNext {
             body = "\(next.title) started · \(Int(next.duration(settings) / 60)) min"
+            actionTitle = nil
         } else {
-            body = "Ready for \(next.title.lowercased())"
+            body = "Click to start \(next.title.lowercased())"
+            actionTitle = "Start \(next.title)"
         }
         notifier.notify(title: "\(finished.symbol) \(finished.title) complete",
                         body: body,
-                        soundName: settings.endSound(for: finished))
+                        soundName: settings.endSound(for: finished),
+                        actionTitle: actionTitle)
     }
 
     private func advance(credit: Bool, autoStart: Bool) {
