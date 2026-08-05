@@ -87,7 +87,7 @@ final class Settings: ObservableObject {
     @AppStorage("shortBreakColor") var shortBreakColor: String = "" { willSet { objectWillChange.send() } }
     @AppStorage("longBreakColor") var longBreakColor: String = "" { willSet { objectWillChange.send() } }
 
-    private func colorHex(for phase: Phase) -> String {
+    func colorHex(for phase: Phase) -> String {
         switch phase {
         case .focus: return focusColor
         case .shortBreak: return shortBreakColor
@@ -95,7 +95,7 @@ final class Settings: ObservableObject {
         }
     }
 
-    private func setColorHex(_ hex: String, for phase: Phase) {
+    func setColorHex(_ hex: String, for phase: Phase) {
         switch phase {
         case .focus: focusColor = hex
         case .shortBreak: shortBreakColor = hex
@@ -112,14 +112,18 @@ final class Settings: ObservableObject {
 
     func resetColor(for phase: Phase) { setColorHex("", for: phase) }
 
-    /// The colour well shows the current effective colour, so an untouched phase
-    /// starts from what the menu bar already draws instead of an arbitrary swatch.
-    func colorBinding(for phase: Phase) -> Binding<Color> {
-        Binding(
-            get: { self.menuBarColor(for: phase) ?? Color(nsColor: .labelColor) },
-            set: { self.setColorHex($0.hexString ?? "", for: phase) }
-        )
-    }
+    /// The choices offered per phase. Fixed sRGB values rather than the dynamic
+    /// system colours: a stored hex has to mean the same thing whichever
+    /// appearance was current when it was picked.
+    static let palette: [(name: String, hex: String)] = [
+        ("Red", "#FF3B30"),
+        ("Orange", "#FF9500"),
+        ("Yellow", "#FFCC00"),
+        ("Green", "#34C759"),
+        ("Blue", "#0A84FF"),
+        ("Purple", "#AF52DE"),
+        ("Pink", "#FF2D55"),
+    ]
 }
 
 extension Color {

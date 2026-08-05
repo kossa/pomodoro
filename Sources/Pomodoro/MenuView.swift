@@ -213,28 +213,42 @@ struct MenuView: View {
         }
     }
 
-    /// Laid out label-then-control like the timer rows: a `ColorPicker`'s own label
-    /// sizes the well to the text beside it, which leaves the three wells ragged.
+    /// Swatches rather than a `ColorPicker`: the picker's well opens `NSColorPanel`,
+    /// which a Dock-less app cannot bring forward from the popover — the popover just
+    /// closes and no panel ever appears. These need nothing outside the popover.
     private func colorPicker(_ title: String, phase: Phase) -> some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 4) {
             Text(title)
-            Spacer(minLength: 8)
-            // Only offered once a colour has been chosen: the default follows the
-            // menu bar through light and dark, which no picked colour can do.
-            Button {
-                settings.resetColor(for: phase)
-            } label: {
-                Image(systemName: "arrow.uturn.backward")
+            Spacer(minLength: 6)
+
+            // The default follows the menu bar through light and dark, which no
+            // picked colour can do, so it stays one click away.
+            Button { settings.resetColor(for: phase) } label: {
+                Image(systemName: "arrow.uturn.backward").font(.caption)
             }
             .buttonStyle(.plain)
-            .foregroundStyle(.secondary)
-            .help("Back to the default colour")
-            .disabled(!settings.hasCustomColor(phase))
-            .opacity(settings.hasCustomColor(phase) ? 1 : 0)
+            .foregroundStyle(settings.hasCustomColor(phase) ? Color.secondary : Color.accentColor)
+            .help("Default colour")
+            .padding(.trailing, 2)
 
-            ColorPicker("", selection: settings.colorBinding(for: phase), supportsOpacity: false)
-                .labelsHidden()
+            ForEach(Settings.palette, id: \.hex) { swatch in
+                colorSwatch(swatch.name, hex: swatch.hex, phase: phase)
+            }
         }
+    }
+
+    private func colorSwatch(_ name: String, hex: String, phase: Phase) -> some View {
+        let selected = settings.colorHex(for: phase).caseInsensitiveCompare(hex) == .orderedSame
+        return Button {
+            settings.setColorHex(hex, for: phase)
+        } label: {
+            Circle()
+                .fill(Color(hex: hex) ?? .clear)
+                .frame(width: 15, height: 15)
+                .overlay(Circle().strokeBorder(.primary, lineWidth: selected ? 2 : 0))
+        }
+        .buttonStyle(.plain)
+        .help(name)
     }
 
     private var sounds: some View {

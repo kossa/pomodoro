@@ -35,9 +35,9 @@
   tomato, the minutes and the seconds independently. Hide all three and the item goes
   blank but stays clickable, leaving notifications as the cue.
 - **A menu bar text colour per phase** — focus, short break and long break can each get
-  their own colour, so the phase reads at a glance. Every one defaults to the menu bar's
-  own colour, the only setting that follows light and dark on its own; a revert button
-  puts it back.
+  their own colour from a row of swatches, so the phase reads at a glance. Every one
+  defaults to the menu bar's own colour, the only setting that follows light and dark on
+  its own; the arrow at the head of the row puts it back.
 - Settings split into **Timer / Sounds / Shortcuts / General** tabs, so the popover
   stays short
 - Configurable focus / short break / long break lengths and long-break interval —

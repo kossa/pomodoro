@@ -3,6 +3,13 @@
 All notable changes to Pomodoro. Versions follow [semantic versioning](https://semver.org):
 a minor bump for new features, a patch bump for fixes.
 
+## [1.6.1] — 2026-08-05
+
+- Fix: the menu bar colour could not actually be changed. The colour well opened
+  `NSColorPanel`, which a Dock-less app cannot bring forward from the popover — the
+  popover simply closed and no panel appeared. The colours are swatches now, chosen
+  in the popover itself.
+
 ## [1.6.0] — 2026-08-05
 
 - **A menu bar text colour per phase** — give focus, short break and long break their
