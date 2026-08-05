@@ -196,7 +196,44 @@ struct MenuView: View {
                 }
             }
             Divider()
+            menuBarColors
+            Divider()
             updatesSection
+        }
+    }
+
+    private var menuBarColors: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Menu bar text colour").font(.caption).foregroundStyle(.secondary)
+            colorPicker("Focus", phase: .focus)
+            colorPicker("Short break", phase: .shortBreak)
+            if settings.longBreaksEnabled {
+                colorPicker("Long break", phase: .longBreak)
+            }
+        }
+    }
+
+    /// Laid out label-then-control like the timer rows: a `ColorPicker`'s own label
+    /// sizes the well to the text beside it, which leaves the three wells ragged.
+    private func colorPicker(_ title: String, phase: Phase) -> some View {
+        HStack(spacing: 6) {
+            Text(title)
+            Spacer(minLength: 8)
+            // Only offered once a colour has been chosen: the default follows the
+            // menu bar through light and dark, which no picked colour can do.
+            Button {
+                settings.resetColor(for: phase)
+            } label: {
+                Image(systemName: "arrow.uturn.backward")
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.secondary)
+            .help("Back to the default colour")
+            .disabled(!settings.hasCustomColor(phase))
+            .opacity(settings.hasCustomColor(phase) ? 1 : 0)
+
+            ColorPicker("", selection: settings.colorBinding(for: phase), supportsOpacity: false)
+                .labelsHidden()
         }
     }
 

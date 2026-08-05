@@ -19,7 +19,7 @@
   <a href="https://kossa.github.io/pomodoro/"><strong>kossa.github.io/pomodoro</strong></a>
 </p>
 
-- 🍅 Live countdown in the menu bar
+- 🍅 Live countdown in the menu bar, in a colour of your choosing per phase
 - ⌨️ Global shortcuts (no Accessibility permission)
 - 🔄 Auto-updates from GitHub
 - 📊 Daily & weekly statistics
@@ -34,6 +34,10 @@
 - Live countdown in the menu bar, its emoji following the phase — show or hide the
   tomato, the minutes and the seconds independently. Hide all three and the item goes
   blank but stays clickable, leaving notifications as the cue.
+- **A menu bar text colour per phase** — focus, short break and long break can each get
+  their own colour, so the phase reads at a glance. Every one defaults to the menu bar's
+  own colour, the only setting that follows light and dark on its own; a revert button
+  puts it back.
 - Settings split into **Timer / Sounds / Shortcuts / General** tabs, so the popover
   stays short
 - Configurable focus / short break / long break lengths and long-break interval —
@@ -116,6 +120,7 @@ System Settings → General → Login Items → **+** → `/Applications/Pomodor
 | `Sources/Pomodoro/ShortcutRecorder.swift` | Click-to-record shortcut field |
 | `Sources/Pomodoro/Updater.swift` | Release checks and the in-place update |
 | `Sources/Pomodoro/MenuView.swift` | The popover UI and its settings tabs |
+| `Sources/Pomodoro/MenuBarLabel.swift` | The menu bar label, drawn as an image when a colour is set |
 
 ## Icon
 

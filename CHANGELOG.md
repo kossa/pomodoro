@@ -3,8 +3,12 @@
 All notable changes to Pomodoro. Versions follow [semantic versioning](https://semver.org):
 a minor bump for new features, a patch bump for fixes.
 
-## Unreleased
+## [1.6.0] — 2026-08-05
 
+- **A menu bar text colour per phase** — give focus, short break and long break their
+  own colour, so the phase is readable at a glance without reading the emoji. Each one
+  defaults to the menu bar's own colour, which is the only setting that follows light
+  and dark automatically; a revert button next to a chosen colour restores it.
 - A landing page at [kossa.github.io/pomodoro](https://kossa.github.io/pomodoro/),
   served by GitHub Pages from `docs/`.
 

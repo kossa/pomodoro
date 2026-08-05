@@ -47,9 +47,7 @@ struct PomodoroApp: App {
             MenuView(engine: engine, settings: settings, stats: stats,
                      shortcuts: shortcuts, updater: updater)
         } label: {
-            // Monospaced digits keep the item's width steady, so a changing
-            // countdown doesn't force the menu bar to re-lay-out every second.
-            Text(menuBarTitle).monospacedDigit()
+            MenuBarLabel(title: menuBarTitle, color: settings.menuBarColor(for: engine.phase))
         }
         .menuBarExtraStyle(.window)
     }
