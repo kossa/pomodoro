@@ -22,7 +22,7 @@
 - ⚡ Native SwiftUI, zero dependencies
 
 <p align="center">
-  <img src="docs/screenshot.png" alt="The countdown running in the macOS menu bar, with the popover open below it: timer, transport controls, force-start buttons, session stats and the expanded settings" width="380">
+  <img src="docs/screenshot.png" alt="The countdown running in the macOS menu bar, with the popover open below it: timer, transport controls, force-start buttons, session stats and the Timer tab of the settings" width="380">
 </p>
 
 ## Features
