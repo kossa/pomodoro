@@ -3,6 +3,11 @@
 All notable changes to Pomodoro. Versions follow [semantic versioning](https://semver.org):
 a minor bump for new features, a patch bump for fixes.
 
+## Unreleased
+
+- A landing page at [kossa.github.io/pomodoro](https://kossa.github.io/pomodoro/),
+  served by GitHub Pages from `docs/`.
+
 ## [1.5.0] — 2026-08-05
 
 - Start the next session straight from the notification. When auto-start is off, the

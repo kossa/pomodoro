@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pomodoro — menu bar Pomodoro timer for macOS</title>
+<meta name="description" content="A native macOS menu bar Pomodoro timer. Per-phase chimes, global shortcuts, session stats and self-updating. SwiftUI, zero dependencies, no Dock icon.">
+<link rel="icon" href="icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pomodoro — menu bar Pomodoro timer for macOS">
+<meta property="og:description" content="A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.">
+<meta property="og:image" content="https://kossa.github.io/pomodoro/screenshot.png">
+<meta property="og:url" content="https://kossa.github.io/pomodoro/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root {
+    --bg: #fdfdfd;
+    --bg-raised: #ffffff;
+    --text: #1d1d1f;
+    --text-dim: #6b6b73;
+    --border: #e3e3e6;
+    --accent: #e5484d;
+    --accent-hover: #cf3a3f;
+    --code-bg: #f5f5f7;
+    --shadow: 0 18px 50px rgba(0, 0, 0, .13);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #0d0d0f;
+        --bg-raised: #17171a;
+        --text: #f5f5f7;
+        --text-dim: #9b9ba3;
+        --border: #2a2a2f;
+        --accent: #e5484d;
+        --accent-hover: #f05a5f;
+        --code-bg: #17171a;
+        --shadow: 0 18px 50px rgba(0, 0, 0, .5);
+    }
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+a { color: var(--accent); }
+
+/* Hero */
+
+header {
+    text-align: center;
+    padding: 88px 0 8px;
+}
+
+header img.icon {
+    width: 96px;
+    height: 96px;
+    max-width: 100%;
+}
+
+h1 {
+    font-size: 3rem;
+    letter-spacing: -.03em;
+    margin: 18px 0 12px;
+}
+
+.tagline {
+    font-size: 1.3rem;
+    color: var(--text-dim);
+    margin: 0 auto 32px;
+    max-width: 30ch;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn {
+    display: inline-block;
+    padding: 13px 30px;
+    border-radius: 980px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background .15s, border-color .15s;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+.btn-primary:hover { background: var(--accent-hover); }
+
+.btn-secondary {
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.btn-secondary:hover { border-color: var(--text-dim); }
+
+.meta {
+    color: var(--text-dim);
+    font-size: .9rem;
+    margin-top: 18px;
+    min-height: 1.6em;
+}
+
+/* Screenshot */
+
+.shot {
+    text-align: center;
+    padding: 56px 0 24px;
+}
+
+.shot img {
+    width: 380px;
+    max-width: 100%;
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+}
+
+/* Sections */
+
+section { padding: 56px 0; }
+
+h2 {
+    font-size: 1.9rem;
+    letter-spacing: -.02em;
+    text-align: center;
+    margin: 0 0 40px;
+}
+
+/* Features */
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+}
+
+.card .emoji {
+    font-size: 1.6rem;
+    line-height: 1;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.card h3 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+}
+
+.card p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: .95rem;
+}
+
+/* Install */
+
+/* The wrapper stays put and the <pre> inside it scrolls, so the copy button keeps
+   its corner however far the long curl line is scrolled. */
+.code {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 52px 20px 20px;
+}
+
+.code pre {
+    margin: 0;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: .85rem;
+    line-height: 1.8;
+}
+
+.code .comment { color: var(--text-dim); }
+
+#copy {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--bg-raised);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 11px;
+    font: inherit;
+    font-size: .78rem;
+    cursor: pointer;
+}
+
+#copy:hover { color: var(--text); }
+
+.note {
+    color: var(--text-dim);
+    font-size: .9rem;
+    margin-top: 18px;
+}
+
+/* Comparison */
+
+.table-scroll { overflow-x: auto; }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 420px;
+}
+
+th, td {
+    border-bottom: 1px solid var(--border);
+    padding: 13px 16px;
+    text-align: center;
+}
+
+th:first-child, td:first-child { text-align: left; }
+
+thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim); }
+
+/* Footer */
+
+footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 0 56px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: .9rem;
+}
+
+footer nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+    header { padding-top: 56px; }
+    h1 { font-size: 2.3rem; }
+    .tagline { font-size: 1.1rem; }
+    section { padding: 40px 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+    <img class="icon" src="icon.png" alt="Pomodoro app icon">
+    <h1>Pomodoro</h1>
+    <p class="tagline">A native macOS menu bar Pomodoro timer. SwiftUI, no dependencies, no Dock icon.</p>
+    <div class="actions">
+        <a class="btn btn-primary" id="download"
+           href="https://github.com/kossa/pomodoro/releases/latest/download/Pomodoro.zip">Download for macOS</a>
+        <a class="btn btn-secondary" href="https://github.com/kossa/pomodoro">View on GitHub</a>
+    </div>
+    <p class="meta" id="meta">macOS 14+ · Apple silicon · MIT</p>
+</header>
+
+<div class="shot">
+    <img src="screenshot.png" loading="eager"
+         alt="The countdown running in the macOS menu bar, with the popover open below it: timer, transport controls, force-start buttons, session stats and the Timer tab of the settings">
+</div>
+
+<section>
+    <h2>What it does</h2>
+    <div class="features">
+        <div class="card">
+            <span class="emoji">🍅</span>
+            <h3>Live countdown</h3>
+            <p>The time ticks in the menu bar, its emoji following the phase. Show or hide the tomato, the minutes and the seconds independently.</p>
+        </div>
+        <div class="card">
+            <span class="emoji">🔔</span>
+            <h3>Click to start the next session</h3>
+            <p>The end-of-session banner carries a Start button — a finished focus rolls into a break without opening the menu.</p>
+        </div>
+        <div class="card">
+            <span class="emoji">⌨️</span>
+            <h3>Global shortcuts</h3>
+            <p>Start, pause, force focus or force break from anywhere. Registered through Carbon, so no Accessibility permission is asked for.</p>
+        </div>
+        <div class="card">
+            <span class="emoji">🎵</span>
+            <h3>A chime per phase</h3>
+            <p>Pick any system sound — or none — for the end of a focus, a short break and a long break, each with a preview button.</p>
+        </div>
+        <div class="card">
+            <span class="emoji">⏭️</span>
+            <h3>Force start</h3>
+            <p>Jump straight into a focus or a break at any point in the cycle. Long breaks can be turned off entirely.</p>
+        </div>
+        <div class="card">
+            <span class="emoji">📊</span>
+            <h3>Session stats</h3>
+            <p>Daily and weekly completed-session counts, kept for the last 30 days and shown right in the popover.</p>
+        </div>
+        <div class="card">
+            <span class="emoji">🔄</span>
+            <h3>Self-updating</h3>
+            <p>Checks GitHub once a day, or on demand, then downloads, verifies and installs the new version in place.</p>
+        </div>
+        <div class="card">
+            <span class="emoji">⚡</span>
+            <h3>Zero dependencies</h3>
+            <p>Plain SwiftUI, a few hundred lines, no frameworks vendored in. It stays out of the Dock and off your CPU.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Install</h2>
+    <div class="code">
+        <button id="copy" type="button">Copy</button>
+        <pre id="install-code">curl -L -o /tmp/Pomodoro.zip https://github.com/kossa/pomodoro/releases/latest/download/Pomodoro.zip
+ditto -x -k /tmp/Pomodoro.zip /Applications
+xattr -dr com.apple.quarantine /Applications/Pomodoro.app
+open /Applications/Pomodoro.app</pre>
+    </div>
+    <p class="note">
+        <code>ditto</code> rather than <code>unzip</code>: it unpacks macOS bundles without leaving
+        <code>._*</code> files behind, which would invalidate the app's code signature. The
+        <code>xattr</code> step is needed because the app is ad-hoc signed rather than notarized.
+        Requires macOS 14 or later on Apple silicon.
+    </p>
+</section>
+
+<section>
+    <h2>How it compares</h2>
+    <div class="table-scroll">
+        <table>
+            <thead>
+                <tr><th>Feature</th><th>Pomodoro</th><th>Other menu bar timers</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Native SwiftUI</td><td>✅</td><td>Varies</td></tr>
+                <tr><td>No Dock icon</td><td>✅</td><td>❌</td></tr>
+                <tr><td>No Accessibility permission</td><td>✅</td><td>❌</td></tr>
+                <tr><td>Self-updating</td><td>✅</td><td>Varies</td></tr>
+                <tr><td>Zero dependencies</td><td>✅</td><td>❌</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<footer>
+    <nav>
+        <a href="https://github.com/kossa/pomodoro">Source</a>
+        <a href="https://github.com/kossa/pomodoro/releases">Releases</a>
+        <a href="https://github.com/kossa/pomodoro/blob/main/CHANGELOG.md">Changelog</a>
+        <a href="https://github.com/kossa/pomodoro/issues">Issues</a>
+        <a href="https://github.com/kossa/pomodoro/blob/main/LICENSE">MIT licence</a>
+    </nav>
+    <p>Found a bug, or want a feature that isn't here? Open an issue — both are welcome.</p>
+</footer>
+
+</div>
+
+<script>
+// The button already carries the right href and a working label, so everything below
+// is decoration: a failed or rate-limited API call simply leaves the static version.
+fetch('https://api.github.com/repos/kossa/pomodoro/releases/latest')
+    .then(function (response) {
+        if (!response.ok) throw new Error(response.status);
+        return response.json();
+    })
+    .then(function (release) {
+        if (!release.tag_name) return;
+        document.getElementById('download').textContent = 'Download ' + release.tag_name;
+        var date = new Date(release.published_at).toLocaleDateString(undefined, {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+        document.getElementById('meta').textContent =
+            'macOS 14+ · Apple silicon · MIT · released ' + date;
+    })
+    .catch(function () { /* keep the static label */ });
+
+document.getElementById('copy').addEventListener('click', function () {
+    var button = this;
+    navigator.clipboard.writeText(document.getElementById('install-code').textContent)
+        .then(function () {
+            button.textContent = 'Copied';
+            setTimeout(function () { button.textContent = 'Copy'; }, 1600);
+        })
+        .catch(function () { button.textContent = 'Press ⌘C'; });
+});
+</script>
+
+</body>
+</html>

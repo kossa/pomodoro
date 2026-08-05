@@ -15,6 +15,10 @@
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license">
 </p>
 
+<p align="center">
+  <a href="https://kossa.github.io/pomodoro/"><strong>kossa.github.io/pomodoro</strong></a>
+</p>
+
 - 🍅 Live countdown in the menu bar
 - ⌨️ Global shortcuts (no Accessibility permission)
 - 🔄 Auto-updates from GitHub
